@@ -1,17 +1,23 @@
 // Socket server connection
 const socket = io()
 
-// Profile logout
-
-/* const logoutBtn = document.getElementById('btn-logout')
-
-logoutBtn.addEventListener('submit', (event) => {
+//Auth logic
+//Login
+const loginForm = document.getElementById('login-form');
+loginForm.addEventListener('submit', async (event) => {
     event.preventDefault()
+    const username = loginForm[0].value
+    const password = loginForm[1].value
 
-    
-}) */
+})
+//Register
+const registerForm = document.getElementById('register-form');
+registerForm.addEventListener('submit', async (event) => {
+    event.preventDefault()
+    const username = registerForm[0].value
+    const password = registerForm[1].value
 
-
+})
 
 // Products logic
 const productTable = document.getElementById('products-table')
@@ -23,7 +29,7 @@ const imageInput = document.getElementById('image-input')
 const submitBtn = document.getElementById('products-form')
 
 socket.on('products-history', (products) => {
-    
+
     fetch('./views/partials/history.hbs')
         .then((data) => data.text())
         .then((serverTemplate) => {

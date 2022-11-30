@@ -12,7 +12,8 @@ const MongoStore = require('connect-mongo');
 const { webAuth } = require('./middlewares/auth');
 const errorMiddleware = require('./middlewares/error.middleware');
 const path = require('path');
-
+const apiRoutes = require('./routers/app.routers');
+const passport = require('passport');
 // Instanciamiento 
 const app = express();
 const httpServer = new HttpServer(app);
@@ -35,21 +36,24 @@ app.use(session({
         maxAge: 600000
     }
 }));
+app.use(passport.initialize())
+app.use(passport.session())
 // Views
 
 app.set('views', './views/pages');
 app.set('view engine', 'ejs');
 
 //
-const products = new Products()
+const ProductsModel = new Products()
 let messages = new Messages('messages', dbConfig.sqlite)
 
 
 const serverConnected = httpServer.listen(PORT, () => {
-    products.connect().then(() => {
-        console.log('Connected to mongo sucessfully')
-    })
-    console.log("Server is up and running on Port", PORT)
+    ProductsModel.connect()
+        .then(() => {
+            console.log('Connected to DB!');
+            console.log('Server is up and running on port: ', +PORT);
+        });
 })
 
 serverConnected.on('error', (error) => {
@@ -61,11 +65,11 @@ const users = []
 io.on('connection', (socket) => {
     console.log('New client connection')
 
-    products.getAll().then(data => socket.emit('products-history', data));
+    ProductsModel.getAll().then(data => socket.emit('products-history', data));
 
     socket.on('newProduct', (newProduct) => {
 
-        products.save(newProduct).then(products.getAll().then(data => io.sockets.emit('products-history', data)))
+        ProductsModel.save(newProduct).then(ProductsModel.getAll().then(data => io.sockets.emit('products-history', data)))
 
 
     });
@@ -95,61 +99,6 @@ io.on('connection', (socket) => {
     })
 })
 
-app.get('/', webAuth, async (req, res) => {
-    const user = await req.session.user
-    res.render(path.join(process.cwd(), 'Public/views/pages/index.ejs'), { user: user })
-});
-
-app.get('/login', (req, res) => {
-    res.sendFile(__dirname + '/public/login.html')
-});
-
-app.post('/login', (req, res) => {
-    const { name, password } = req.body;
-    let user = formatUser(name)
-    req.session.user = user;
-    req.session.save((err) => {
-        if (err) {
-            console.log("Session error => ", err);
-            return res.redirect('/error');
-        }
-        res.redirect('/');
-    })
-});
-
-app.post('/logout', async (req, res) => {
-    const user = req.session?.user
-    console.log('Log de prueba', user)
-    if (user.name) {
-        req.session.destroy(err => {
-            if (!err) {
-                res.render(path.join(process.cwd(), 'Public/views/pages/logout.ejs'), { name: user.name })
-
-            } else {
-                res.redirect('/')
-            }
-        })
-    } else {
-        res.redirect('/')
-    }
-});
-
-app.get('/logout', async (req, res) => {
-    res.redirect('/')
-});
-
-/* app.get('/products', (req, res) => {
-    res.sendFile(__dirname + '/public/views/layouts/index.hbs')
-})
- */
-app.post('/products', (req, res) => {
-    products.save(req.body)
-    res.redirect('/products')
-})
-
-
-app.get('*', (req, res) => {
-    res.status(404).send('Página no encontrada')
-})
+app.use(apiRoutes)
 
 app.use(errorMiddleware)

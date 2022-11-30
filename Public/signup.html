@@ -12,8 +12,8 @@
 
 <body>
     <div class="authDiv">
-        <h3>Hello there!</h3>
-        <form action="/auth/login" method="POST" id="login-form" class="loginForm">
+        <h3>Welcome!</h3>
+        <form action="/auth/register" method="POST" id="signup-form" class="signinForm">
             <div>
                 <label for="email">Email:</label><br>
                 <input required class="emailInput" id="email-input" name="username" placeholder="jhondoe@example.com"
@@ -25,12 +25,12 @@
                     type="text"><br>
             </div>
             <div>
-                <button id="login-btn">Log in</button>
+                <button id="signup-btn">Sign up</button>
             </div>
         </form>
-        <span>Do not have an account?</span>
-        <a href="/register">
-            <button>Sign Up</button>
+        <span>Already have an account?</span>
+        <a href="/">
+            <button>Log in</button>
         </a>
     </div>
 </body>

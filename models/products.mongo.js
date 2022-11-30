@@ -2,15 +2,7 @@ const mongoose = require('mongoose');
 const { HTTP_STATUS } = require('../constants/api.constants');
 const dbConfig = require('../db/db.config');
 const { HttpError } = require('../utils/utils');
-const { Schema } = require('mongoose')
-
-const productSchema = new Schema({
-    title: { type: String },
-    thumbnail: { type: String },
-    stock: { type: Number },
-    price: { type: Number },
-    description: { type: String }
-})
+const productSchema = require('./schemas/Product.schema')
 
 class Products {
 

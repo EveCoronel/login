@@ -1,8 +1,8 @@
 let webAuth = (req, res, next) => {
     if (req.session?.user) {
-        next()
+        res.redirect('/home')
     } else {
-        res.redirect('/login')
+        next()
     }
 }
 
