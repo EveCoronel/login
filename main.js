@@ -9,9 +9,7 @@ const { Server: HttpServer } = require('http');
 const { Server: SocketServer } = require('socket.io')
 const PORT = process.env.PORT || 8080
 const MongoStore = require('connect-mongo');
-const { webAuth } = require('./middlewares/auth');
 const errorMiddleware = require('./middlewares/error.middleware');
-const path = require('path');
 const apiRoutes = require('./routers/app.routers');
 const passport = require('passport');
 // Instanciamiento 

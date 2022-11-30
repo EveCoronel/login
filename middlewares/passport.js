@@ -5,21 +5,11 @@ const Users = require('../models/user.mongo');
 
 const UsersModel = new Users();
 
-
-const generateHash = (password) => {
-    let bcryptPassword = ''
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(password, salt, (err, hash) => {
-            bcryptPassword = hash
-        });
-    });
-}
-
 passport.use('signup', new LocalStrategy(async (username, password, done) => {
     try {
         let newUser = {
             email: username,
-            password: generateHash(password)
+            password: await bcrypt.hash(password, 10)
         }
         const user = await UsersModel.save(newUser)
         return done(null, user)
@@ -32,16 +22,14 @@ passport.use('signup', new LocalStrategy(async (username, password, done) => {
 passport.use('login', new LocalStrategy(async (username, password, done) => {
     try {
         const user = await UsersModel.getByEmail(username)
-        let isValidPassword = bcrypt.compare(password, user.password, (err, result) => {
-            return result;
-        });
+        let isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
-            console.log('Error signing user up...')
+            console.log('Error login user in...')
             return done(null, false)
         }
         return done(null, user)
     } catch (error) {
-        console.log('Error signing user up...')
+        console.log('Error login user in...')
         return done(error)
     }
 }))

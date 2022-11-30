@@ -1,34 +1,21 @@
 const express = require('express');
 const passport = require('../../middlewares/passport');
 const router = express.Router();
+const path = require('path')
 
 router.get('/login', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../public/login.html'));
 });
 
-/* router.post('/login', (req, res) => {
-    const { name, password } = req.body;
-    let user = formatUser(name)
-    req.session.user = user;
-    req.session.save((err) => {
-        if (err) {
-            console.log("Session error => ", err);
-            return res.redirect('/error');
-        }
-        res.redirect('/home');
-    })
-}); */
-
-router.post('/login', passport.authenticate('login', { failureRedirect: '/error', successRedirect: '/home' }));
-router.post('/register', passport.authenticate('signup', { failureRedirect: '/error', successRedirect: '/home' }));
+router.post('/login', passport.authenticate('login', { failureRedirect: '/loginError', successRedirect: '/home' }));
+router.post('/register', passport.authenticate('signup', { failureRedirect: '/signupError', successRedirect: '/home' }));
 
 router.post('/logout', async (req, res) => {
-    const user = req.session?.user
-    console.log('Log de prueba', user)
-    if (user.name) {
+    const user = req.user
+    if (user.email) {
         req.session.destroy(err => {
             if (!err) {
-                res.render(path.join(process.cwd(), 'Public/views/pages/logout.ejs'), { name: user.name })
+                res.render(path.join(process.cwd(), 'Public/views/pages/logout.ejs'), { email: user.email })
 
             } else {
                 res.redirect('/')

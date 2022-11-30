@@ -13,8 +13,16 @@
     <nav>
 
     </nav>
-    <div id="profile-dive" class="">
+    <div class="">
+        <h2 class="">
+            Bienvenido, <%= user.email %>
+                <form id="logout-form" action="/auth/logout" method="POST">
+                    <button type="submit">
+                        Logout
+                    </button>
+                </form>
 
+        </h2>
     </div>
     <div style="display: flex; flex-direction: column; align-items: center;">
         <div>

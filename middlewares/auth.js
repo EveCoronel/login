@@ -1,6 +1,14 @@
 let webAuth = (req, res, next) => {
-    if (req.session?.user) {
+    if (!req.isAuthenticated()) {
+        next()
+    } else {
         res.redirect('/home')
+    }
+}
+
+let homeAuth = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        res.redirect('/')
     } else {
         next()
     }
@@ -16,5 +24,6 @@ let apiAuth = (req, res, next) => {
 
 module.exports = {
     webAuth,
-    apiAuth
+    apiAuth,
+    homeAuth
 }
